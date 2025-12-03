@@ -37,9 +37,7 @@ notes: ""
 
 
 def extract_date_from_filename(filename: str) -> str:
-    """
-    从类似 20251203_test1.jpg 中提取日期，返回 YYYY-MM-DD 字符串
-    """
+    """从文件名中提取日期（YYYYMMDD 开头 → YYYY-MM-DD）"""
     match = re.match(r"(\d{8})", filename)
     if match:
         try:
@@ -51,21 +49,20 @@ def extract_date_from_filename(filename: str) -> str:
 
 
 def list_images():
-    """
-    扫描 images/ 下所有图片，返回列表
-    """
+    """扫描 images/ 目录，列出所有图片及其元信息"""
     images = []
     if not IMAGES_ROOT.exists():
         return images
 
     for path in IMAGES_ROOT.rglob("*"):
         if path.is_file() and path.suffix.lower() in IMAGE_EXTS:
-            rel_path = path.as_posix()  # 相对项目根目录
-            rel_under_images = path.relative_to(IMAGES_ROOT).as_posix()  # 用于图片访问
+            rel_path = path.as_posix()
+            rel_under_images = path.relative_to(IMAGES_ROOT).as_posix()
             stem = path.stem
             date = extract_date_from_filename(path.name)
             md_path = NOTES_DIR / f"{stem}.md"
             has_md = md_path.exists()
+
             images.append({
                 "file_name": path.name,
                 "rel_path": rel_path,
@@ -87,9 +84,6 @@ def index():
 
 @app.route("/edit")
 def edit():
-    """
-    编辑/生成单张图片的描述文件
-    """
     rel_path = request.args.get("image")
     if not rel_path:
         return redirect(url_for("index"))
@@ -103,7 +97,7 @@ def edit():
         rel_path=rel_path,
         file_name=p.name,
         default_id=default_id,
-        default_date=default_date
+        default_date=default_date,
     )
 
 
@@ -118,13 +112,12 @@ def save():
     tags_str = (request.form.get("tags") or "").strip()
     body = request.form.get("body") or ""
 
-    # 处理日期字段
+    # date 字段写入 YAML：有值时加引号，没有时写空字符串
     if date_val:
         date_yaml = f"\"{date_val}\""
     else:
         date_yaml = '""'
 
-    # 处理 tags 字段（逗号分隔）
     tags_list = [t.strip() for t in tags_str.split(",") if t.strip()]
     if tags_list:
         tags_block = "tags:\n" + "\n".join(f"  - {t}" for t in tags_list)
@@ -138,7 +131,7 @@ def save():
         date=date_yaml,
         tags_block=tags_block,
         media_type=media_type,
-        body=body
+        body=body,
     )
 
     NOTES_DIR.mkdir(exist_ok=True)
@@ -152,11 +145,44 @@ def save():
     return redirect(url_for("index"))
 
 
+def shutdown_server():
+    """关闭 Werkzeug 提供的开发服务器"""
+    func = request.environ.get("werkzeug.server.shutdown")
+    if func is None:
+        # 不是在 werkzeug 的开发服务器环境中运行时抛错
+        raise RuntimeError("Not running with the Werkzeug Server")
+    func()
+
+
+@app.route("/shutdown", methods=["POST"])
+def shutdown():
+    """处理来自网页的关闭请求：停止服务并尝试关闭当前页面"""
+    shutdown_server()
+    # 返回简单页面，尝试自动关闭当前窗口，失败则提示手动关闭
+    return """
+    <!doctype html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="utf-8">
+      <title>正在关闭</title>
+      <script>
+        // 尝试关闭当前窗口
+        window.close();
+        // 如果浏览器阻止自动关闭，则稍后给出提示
+        setTimeout(function() {
+          document.body.innerHTML = '<p>服务器已关闭，如页面未自动关闭，请手动关闭此标签页。</p>';
+        }, 500);
+      </script>
+    </head>
+    <body>
+      <p>正在关闭服务器...</p>
+    </body>
+    </html>
+    """
+
+
 @app.route("/img/<path:filename>")
 def serve_image(filename):
-    """
-    用于在网页中显示 images/ 下的图片
-    """
     return send_from_directory(IMAGES_ROOT, filename)
 
 
@@ -165,11 +191,10 @@ if __name__ == "__main__":
     from threading import Timer
 
     def open_browser():
-        # 在默认浏览器打开你的网页
         webbrowser.open("http://127.0.0.1:5000")
 
-    # 延迟 1 秒打开浏览器，确保 Flask 已经启动
+    # 1 秒后自动打开浏览器
     Timer(1, open_browser).start()
 
-    # 建议关闭 debug=True，否则 Flask 会启动两个进程导致重复打开浏览器
+    # 使用 debug=False，避免重载器导致的重复进程，便于正常关闭
     app.run(debug=False)

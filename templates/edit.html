@@ -34,10 +34,29 @@
     }
     .top { display: flex; gap: 20px; align-items: flex-start; }
     .right { flex: 1; }
+    /* 新增：关闭管理程序按钮样式（与 index.html 保持一致） */
+    .btn-shutdown {
+      display: inline-block;
+      margin: 0 0 16px 0;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #c00;
+      background: #fbeaea;
+      color: #900;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>编辑描述文件</h1>
+
+  <!-- 关闭服务器按钮 -->
+  <form method="post"
+        action="{{ url_for('shutdown') }}"
+        onsubmit="return confirm('确定要关闭管理程序并退出吗？');">
+    <button type="submit" class="btn-shutdown">关闭管理程序并退出</button>
+  </form>
 
   <div class="top">
     <div>
