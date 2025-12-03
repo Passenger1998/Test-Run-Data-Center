@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>图像描述文件生成器</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 16px; }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 8px;
+      width: 180px;
+      box-sizing: border-box;
+    }
+    .thumb {
+      width: 100%;
+      max-height: 140px;
+      object-fit: contain;
+      border-radius: 4px;
+      background: #f5f5f5;
+    }
+    .meta { font-size: 12px; margin-top: 4px; }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      border-radius: 999px;
+      background: #eee;
+      margin-top: 4px;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      text-decoration: none;
+      color: #333;
+      background: #fff;
+    }
+    .btn.secondary {
+      border-color: #999;
+      color: #666;
+    }
+    .flash {
+      background: #fffae5;
+      border: 1px solid #f0d000;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h1>图像描述文件生成器（本地）</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">
+        {% for msg in messages %}
+          <div>{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if images|length == 0 %}
+    <p>没有找到任何图片，请确认 <code>images/</code> 目录下有文件。</p>
+  {% else %}
+    <div class="grid">
+      {% for img in images %}
+        <div class="card">
+          <img class="thumb"
+               src="{{ url_for('serve_image', filename=img.rel_under_images) }}"
+               alt="{{ img.file_name }}"/>
+
+          <div class="meta">
+            <div>{{ img.file_name }}</div>
+            {% if img.date %}
+              <div>日期：{{ img.date }}</div>
+            {% endif %}
+            {% if img.has_md %}
+              <div class="badge">已生成描述</div>
+            {% else %}
+              <div class="badge">尚未生成</div>
+            {% endif %}
+          </div>
+
+          <a class="btn"
+             href="{{ url_for('edit', image=img.rel_path) }}">
+            {{ '编辑描述' if img.has_md else '生成描述文件' }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</body>
+</html>

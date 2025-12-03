@@ -1,0 +1,59 @@
+# -------------------------
+# OS SYSTEM FILES
+# -------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# -------------------------
+# PYTHON & VENV
+# -------------------------
+venv/
+__pycache__/
+*.pyc
+
+# Flask instance folders (if future screenshots or uploads stored here)
+instance/
+*.log
+
+# -------------------------
+# EDITOR / TEMP FILES
+# -------------------------
+*.swp
+*.swo
+
+# VSCode
+.vscode/
+
+# -------------------------
+# PROJECT CONTENT LAYER
+# -------------------------
+# 图片属于内容层，是否加入版本控制你可自行决定
+# 若你不希望把大量 JPG 放进 Git，可取消注释以下： 
+images/**/*.jpg
+images/**/*.jpeg
+images/**/*.png
+images/**/*.webp
+
+# 若你以后不希望把自动生成的 markdown notes 也放进 Git，取消注释：
+notes/**/*.md
+
+# -------------------------
+# APP LAUNCH SCRIPTS
+# -------------------------
+# 你在 macOS 的 run_app.command 会自动生成一些临时权限标记
+*.command
+
+# -------------------------
+# BACKUP FILES
+# -------------------------
+*~
+*.bak
+*.tmp

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>编辑描述文件</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; }
+    label { display: block; margin-top: 10px; font-size: 13px; }
+    input[type="text"], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    textarea { min-height: 120px; }
+    .btn {
+      margin-top: 16px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #fff;
+      cursor: pointer;
+    }
+    .thumb {
+      max-width: 240px;
+      max-height: 240px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f5f5f5;
+      margin-bottom: 12px;
+    }
+    .top { display: flex; gap: 20px; align-items: flex-start; }
+    .right { flex: 1; }
+  </style>
+</head>
+<body>
+  <h1>编辑描述文件</h1>
+
+  <div class="top">
+    <div>
+      <img class="thumb"
+           src="{{ url_for('serve_image',
+               filename=rel_path.split('/', 1)[1] if '/' in rel_path else rel_path) }}"
+           alt="{{ file_name }}">
+      <div style="font-size: 12px; margin-top: 4px;">
+        文件：{{ file_name }}<br>
+        路径：{{ rel_path }}
+      </div>
+    </div>
+
+    <div class="right">
+      <form method="post" action="{{ url_for('save') }}">
+        <input type="hidden" name="rel_path" value="{{ rel_path }}">
+        <input type="hidden" name="file_name" value="{{ file_name }}">
+
+        <label>
+          id（作品 ID，默认等于文件名）
+          <input type="text" name="id" value="{{ default_id }}">
+        </label>
+
+        <label>
+          date（YYYY-MM-DD，如果文件名是 20251203_xxx，会自动填 2025-12-03）
+          <input type="text" name="date" value="{{ default_date }}">
+        </label>
+
+        <label>
+          media_type（媒介类型，如 illustration / manga / photo）
+          <input type="text" name="media_type" value="">
+        </label>
+
+        <label>
+          tags（逗号分隔，例如：ref/image, db/test）
+          <input type="text" name="tags" value="">
+        </label>
+
+        <label>
+          body（正文笔记，可写一些分析文字）
+          <textarea name="body"></textarea>
+        </label>
+
+        <button type="submit" class="btn">保存描述文件</button>
+      </form>
+    </div>
+  </div>
+
+  <p><a href="{{ url_for('index') }}">← 返回列表</a></p>
+</body>
+</html>
