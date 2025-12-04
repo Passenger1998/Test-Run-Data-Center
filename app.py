@@ -24,7 +24,7 @@ source:
   author: ""
   title: ""
 {tags_block}
-media_type: "{media_type}"
+media_applicaton_form: "{media_applicaton_form}"
 style_tags: []
 subject_tags: []
 composition_tags: []
@@ -108,7 +108,7 @@ def save():
 
     id_val = (request.form.get("id") or "").strip() or Path(file_name).stem
     date_val = (request.form.get("date") or "").strip()
-    media_type = (request.form.get("media_type") or "").strip()
+    media_applicaton_form = (request.form.get("media_applicaton_form") or "").strip()
     tags_str = (request.form.get("tags") or "").strip()
     body = request.form.get("body") or ""
 
@@ -130,7 +130,7 @@ def save():
         rel_path=rel_path,
         date=date_yaml,
         tags_block=tags_block,
-        media_type=media_type,
+        media_applicaton_form=media_applicaton_form,
         body=body,
     )
 

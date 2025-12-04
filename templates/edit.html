@@ -6,7 +6,7 @@
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; }
     label { display: block; margin-top: 10px; font-size: 13px; }
-    input[type="text"], textarea {
+    input[type="text"], textarea, select {
       width: 100%;
       box-sizing: border-box;
       padding: 6px 8px;
@@ -34,7 +34,7 @@
     }
     .top { display: flex; gap: 20px; align-items: flex-start; }
     .right { flex: 1; }
-    /* 新增：关闭管理程序按钮样式（与 index.html 保持一致） */
+    /* 关闭管理程序按钮样式（与 index.html 保持一致） */
     .btn-shutdown {
       display: inline-block;
       margin: 0 0 16px 0;
@@ -86,8 +86,14 @@
         </label>
 
         <label>
-          media_type（媒介类型，如 illustration / manga / photo）
-          <input type="text" name="media_type" value="">
+          media_applicaton_form（形态媒介类型：这张图在视觉工作流中扮演什么角色？）
+          <select name="media_applicaton_form">
+            <option value="">— 请选择 —</option>
+            <option value="分镜">分镜</option>
+            <option value="定图">定图</option>
+            <option value="设定设计图">设定设计图</option>
+            <option value="素材参考">素材参考</option>
+          </select>
         </label>
 
         <label>
